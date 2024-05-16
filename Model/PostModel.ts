@@ -1,3 +1,4 @@
+import axios from "axios";
 import UserModel, { User } from "./UserModel";
 
 export type Post = {
@@ -11,8 +12,16 @@ export type Post = {
 const data: Post[] = [
 ];
 
-const getAllPosts = (): Post[] => {
-    return data;
+const getAllPosts = async (accessToken: string): Promise<Post[]> => {
+    try {
+        const response = await axios.get('http://172.20.10.4:3000/post/all/posts', {
+            headers: { Authorization: `Bearer ${accessToken}` }
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching posts:', error);
+        throw error; // Re-throw the error if you want to handle it outside this function
+    }
 }
 
 const getPost = (id: string): Post | undefined => {
@@ -34,7 +43,7 @@ const deletePost = (id: string) => {
 const getOwner = async (id: string): Promise<User> => {
     const post = getPost(id);
     
-    const user = await UserModel.getUser(post?.owner);
+    const user = await UserModel.getUser();
     const u = user?.data;
     return u ? u : undefined;
 }

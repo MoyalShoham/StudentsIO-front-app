@@ -1,3 +1,4 @@
+import { useRoute } from "@react-navigation/native";
 import axios from "axios";
 
 export type User = {
@@ -46,11 +47,13 @@ const log_in = async (email: string, password: string) => {
     return await axios.post('http://172.20.10.4:3000/auth/login', { email, password });
 }
 
-const getUser = async (id: string | undefined) => {
-    if (!id) {
-        return undefined;
+const getUser = async ()  => {
+    const accessToken = useRoute().params as { accessToken: string };
+    const res = await axios.get(`http://172.20.10.4:3000/auth/user`,{ 
+        headers: { Authorization: `Bearer ${accessToken}` 
     }
-    return await axios.get(`http://172.20.10.4:3000/auth/user`);
+    });
+    return res.data;
 }
 
 const addUser = async (user: User) => {

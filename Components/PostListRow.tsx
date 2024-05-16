@@ -3,6 +3,8 @@ import React, { useState, useEffect, FC } from 'react';
 import PostModel from '../Model/PostModel';
 import UserModel, { User } from '../Model/UserModel';
 
+
+
 const Post_List_Row: FC<{
     owner: string,
     message: string,
@@ -10,9 +12,16 @@ const Post_List_Row: FC<{
     date: Date,
     image: string,
     onItemSelected: (id: string) => void
-}> = ({ _pid, message, image, date, onItemSelected }) => {
+}> = ({ _pid, message, image, date, owner, onItemSelected }) => {
 
-    const [owner, setOwner] = useState<null | User>(null);
+    const [user, setUser] = useState<User>();
+
+    useEffect(() => {
+        const fetchData = async () => {
+            setUser(await UserModel.getUser());
+        };
+        fetchData();
+    }, []);
 
     const onPress = () => {
         onItemSelected(_pid);
@@ -30,16 +39,16 @@ const Post_List_Row: FC<{
         <TouchableHighlight onPress={onPress} underlayColor={'grey'}>
             <View style={styles.listrow}>
                 {
-                    owner.profile_picture === '' ?
+                    user?.profile_picture === '' ?
                         <Image style={styles.avatar} source={require('../assets/avatar.jpeg')} />
                         :
-                        <Image style={styles.avatar} source={{ uri: owner.profile_picture }} />
+                        <Image style={styles.avatar} source={{ uri: user?.profile_picture }} />
                 }
                 <View style={styles.info}>
-                    <Text style={styles.name}>{owner.full_name}</Text>
-                    <Text style={styles.other}>{owner.faculty + ' year: ' + owner.year}</Text>
+                    <Text style={styles.name}>{user?.full_name}</Text>
+                    <Text style={styles.other}>{user?.faculty + ' year: ' + user?.year}</Text>
                     <Text style={styles.other}>{message}</Text>
-                    <Text style={styles.other}>{date.toDateString()}</Text>
+                    <Text style={styles.other}>{'Ahshav'}</Text>
                     {
                         image === '' ?
                             <Image style={styles.avatar} source={require('../assets/avatar.jpeg')} />

@@ -13,7 +13,7 @@ const Sign_In: FC<{ navigation: any }> = ({ navigation }) => {
     // navigate to Home page 
     const onCancel = () => {
         console.log('Cancel');
-        navigation.navigate('UserListPage');
+        navigation.navigate('Start-Page');
     }
 
 
@@ -23,9 +23,11 @@ const Sign_In: FC<{ navigation: any }> = ({ navigation }) => {
             email: email,
             password: password,
         }
+        
         const accessToken = UserModel.log_in(user.email, user.password);
+
         // navigate to home screen (posts of other users)
-        navigation.navigate('StudentListPage', {accessToken: (await accessToken).data.accessToken});
+        navigation.navigate('Home-Page', {accessToken: (await accessToken).data.accessToken});
     };
 
     return (

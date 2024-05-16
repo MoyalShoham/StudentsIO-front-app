@@ -4,8 +4,11 @@ import StudentListRow from "./StudentListRow";
 import UserModel, { User } from "../Model/UserModel";
 import PostModel, { Post } from "../Model/PostModel";
 import Post_List_Row from "./PostListRow";
+import { useRoute } from "@react-navigation/native";
 
 const Home_Page: FC<{ navigation: any }> = ({ navigation }) => {
+    const {accessToken} = useRoute().params as {accessToken: string};
+
     const [data, setData] = useState<Post[]>([]);
     
     const onItemSelected = (id: string) => {
@@ -18,13 +21,14 @@ const Home_Page: FC<{ navigation: any }> = ({ navigation }) => {
         console.log('focus')
         let posts: Post[] = [];
         try {
-            posts = PostModel.getAllPosts()
+            posts = await PostModel.getAllPosts(accessToken);
+            console.log(posts)
         } catch (err) {
+            setData(Array<Post>());
             console.log("fail fetching posts " + err)
-            setData(Array<Post>())
         }
-        setData(posts)
-    })
+        setData(posts);
+        })
         return unsubscribe
     });
 

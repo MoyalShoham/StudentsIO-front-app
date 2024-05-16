@@ -8,6 +8,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import UserAddPage from './Components/Register';
 import Sign_In from './Components/Sign-In';
 import Home_Page from './Components/Home-Page';
+import StartPage from './Components/Start-Page';
 
 // const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -16,10 +17,12 @@ const StudentsListStack = createNativeStackNavigator();
 const StudentsListScreen: FC = () => {
   return (
     <StudentsListStack.Navigator>
-
-      <StudentsListStack.Screen name="HomePage" component={Home_Page} options={{ title: 'Home' }} />
+      <StudentsListStack.Screen name="Start-Page" component={StartPage} options={{ title: 'Hello' }} />
+      <StudentsListStack.Screen name="Home-Page" component={Home_Page} options={{ title: 'Home' }} />
       <StudentsListStack.Screen name="StudentDetailsPage" component={StudentDetailsPage} options={{ title: 'Student Details' }} />
       <StudentsListStack.Screen name="Register" component={UserAddPage} options={{ title: 'Sign Up' }} />
+      <StudentsListStack.Screen name="Sign_In" component={Sign_In} options={{ title: 'Sign In' }} />
+
     </StudentsListStack.Navigator>
   );
 }
@@ -30,7 +33,6 @@ export default function App() {
       <Tab.Navigator>
         <Tab.Screen name="StudentsListScreen" component={StudentsListScreen} options={{ headerShown: false }} />
         <Tab.Screen name="Register" component={UserAddPage} options={{ title: 'Add New Student' }} />
-        <Tab.Screen name="Sign_In" component={Sign_In} options={{ title: 'Sign In' }} />
 
       </Tab.Navigator>
     </NavigationContainer >

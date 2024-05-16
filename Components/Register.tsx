@@ -33,7 +33,7 @@ const UserAddPage: FC<{ navigation: any }> = ({ navigation }) => {
             faculty: faculty,
         }
         UserModel.addUser(user);
-        navigation.navigate('StudentListPage');
+        navigation.navigate('Sign_In');
     };
 
     return (
