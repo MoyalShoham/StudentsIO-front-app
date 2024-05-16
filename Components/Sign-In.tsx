@@ -4,49 +4,35 @@ import UserModel, {User} from '../Model/UserModel';
 import axios from 'axios';
 
 
-const UserAddPage: FC<{ navigation: any }> = ({ navigation }) => {
-    const [full_name, setFullName] = useState('');
+const Sign_In: FC<{ navigation: any }> = ({ navigation }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [year, setYear] = useState('');
-    const [faculty, setFaculty] = useState('');
-    const [gender, setGender] = useState('');
-    const [profile_picture, setProfilePicture] = useState('');
 
+
+
+    // navigate to Home page 
     const onCancel = () => {
         console.log('Cancel');
         navigation.navigate('UserListPage');
     }
 
 
-    const onSave = async () => {
-        console.log('Save');
-        const user: User = {
-            full_name: full_name,
+    const onLogIn = async () => {
+        console.log('Log In');
+        const user = {
             email: email,
             password: password,
-            profile_picture: profile_picture,
-            gender: gender,
-            tokens: [],
-            posts: [],
-            year: year,
-            faculty: faculty,
         }
-        UserModel.addUser(user);
-        navigation.navigate('StudentListPage');
+        const accessToken = UserModel.log_in(user.email, user.password);
+        // navigate to home screen (posts of other users)
+        navigation.navigate('StudentListPage', {accessToken: (await accessToken).data.accessToken});
     };
 
     return (
         <KeyboardAvoidingView style={styles.container} behavior='padding' >
             <ScrollView>
                 <View style={styles.container}>
-                    <Image style={styles.avatar} source={require('../assets/avatar.jpeg')} />
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={setFullName}
-                        value={full_name}
-                        placeholder="Enter your Full Name"
-                    />
+                    
                     <TextInput
                         style={styles.input}
                         onChangeText={setEmail}
@@ -59,35 +45,11 @@ const UserAddPage: FC<{ navigation: any }> = ({ navigation }) => {
                         value={password}
                         placeholder="Enter Password"
                     />
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={setProfilePicture}
-                        value={profile_picture}
-                        placeholder="add your profile picture"
-                    />
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={setGender}
-                        value={gender}
-                        placeholder="Enter your Gender"
-                    />
-                <TextInput
-                        style={styles.input}
-                        onChangeText={setFaculty}
-                        value={faculty}
-                        placeholder="Enter your Faculty"
-                    />
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={setYear}
-                        value={year}
-                        placeholder="Enter your year of studies"
-                    />
                     <View style={styles.buttons}>
                         <TouchableOpacity style={styles.button} onPress={onCancel}>
                             <Text style={styles.buttonText}>CANCEL</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={styles.button} onPress={onSave}>
+                        <TouchableOpacity style={styles.button} onPress={onLogIn}>
                             <Text style={styles.buttonText}>SAVE</Text>
                         </TouchableOpacity>
                     </View>
@@ -140,4 +102,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default UserAddPage;
+export default Sign_In;

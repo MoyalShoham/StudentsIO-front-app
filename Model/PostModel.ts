@@ -1,3 +1,5 @@
+import UserModel, { User } from "./UserModel";
+
 export type Post = {
     owner: string;
     message: string;
@@ -14,7 +16,8 @@ const getAllPosts = (): Post[] => {
 }
 
 const getPost = (id: string): Post | undefined => {
-    return data.find((post) => post._pid == id);
+    const res = data.find((post) => post._pid == id);
+    return res ? res : undefined;
 }
 
 const addPost = (post: Post) => {
@@ -28,4 +31,12 @@ const deletePost = (id: string) => {
     }
 }
 
-export default { getAllPosts, getPost, addPost, deletePost };
+const getOwner = async (id: string): Promise<User> => {
+    const post = getPost(id);
+    
+    const user = await UserModel.getUser(post?.owner);
+    const u = user?.data;
+    return u ? u : undefined;
+}
+
+export default { getAllPosts, getPost, addPost, deletePost, getOwner };

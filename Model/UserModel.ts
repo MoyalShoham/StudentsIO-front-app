@@ -42,8 +42,15 @@ const getAllUsers = async () => {
     return users;
 }
 
-const getUser = async (id: string) => {
-    return await axios.get(`http://172.20.10.4:3000/auth/user${id}`);
+const log_in = async (email: string, password: string) => {
+    return await axios.post('http://172.20.10.4:3000/auth/login', { email, password });
+}
+
+const getUser = async (id: string | undefined) => {
+    if (!id) {
+        return undefined;
+    }
+    return await axios.get(`http://172.20.10.4:3000/auth/user`);
 }
 
 const addUser = async (user: User) => {
@@ -55,4 +62,4 @@ const deleteUser = () => {
     
 }
 
-export default { getAllUsers, getUser, addUser, deleteUser };
+export default { getAllUsers, getUser, addUser, deleteUser, log_in };
