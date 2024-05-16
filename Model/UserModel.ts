@@ -1,3 +1,5 @@
+import axios from "axios";
+
 export type User = {
     _id?: string;
     full_name: string;
@@ -13,28 +15,44 @@ export type User = {
 
 };
 
-const data: User[] = [
-];
 
 
 
-const getAllUsers = (): User[] => {
-    return data;
-}
 
-const getUser = (id: string): User | undefined => {
-    return data.find((user) => user._id == id);
-}
-
-const addUser = (user: User) => {
-    data.push(user);
-}
-
-const deleteUser = (id: string) => {
-    const index = data.findIndex((user) => user._id === id);
-    if (index !== -1) {
-        data.splice(index, 1);
+const getAllUsers = async () => {
+    const res: any = await axios.get('http://172.20.10.4:3000/auth/users')
+    let users = Array<User>();
+    if (res.data) {
+        res.data.forEach((obj: any) => {
+            const u: User = {
+                full_name: obj.full_name,
+                email: obj.email,
+                password: obj.password,
+                _id: obj._id,
+                gender: obj.gender,
+                profile_picture: obj.profile_picture,
+                tokens: obj.tokens,
+                posts: obj.posts,
+                year: obj.year,
+                faculty: obj.faculty
+            };
+            users.push(u);
+        });
     }
+    return users;
+}
+
+const getUser = async (id: string) => {
+    return await axios.get(`http://172.20.10.4:3000/auth/user${id}`);
+}
+
+const addUser = async (user: User) => {
+    await axios.post('http://172.20.10.4:3000/auth/register', user);
+}
+
+const deleteUser = () => {
+    return axios.delete('http://172.20.10.4:3000/auth/delete');
+    
 }
 
 export default { getAllUsers, getUser, addUser, deleteUser };

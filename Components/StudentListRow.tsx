@@ -20,7 +20,12 @@ const StudentListRow: FC<{
             onPress={onPress}
             underlayColor={'grey'}>
             <View style={styles.listrow}>
-                <Image style={styles.avatar} source={require(profile_picture)} />
+                {
+                    profile_picture === '' ?
+                        <Image style={styles.avatar} source={require('../assets/avatar.jpeg')} />
+                        :
+                        <Image style={styles.avatar} source={{ uri: profile_picture }} />
+                }
                 <View style={styles.info}>
                     <Text style={styles.name}>{full_name}</Text>
                     <Text style={styles.other}>{faculty + 'year:' + year}</Text>

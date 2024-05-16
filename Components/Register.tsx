@@ -1,6 +1,8 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView, Button, Alert, TextInput, StatusBar } from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView, Button, Alert, TextInput, StatusBar, KeyboardAvoidingView } from 'react-native';
 import React, { useState, FC } from 'react';
 import UserModel, {User} from '../Model/UserModel';
+import axios from 'axios';
+
 
 const UserAddPage: FC<{ navigation: any }> = ({ navigation }) => {
     const [full_name, setFullName] = useState('');
@@ -18,7 +20,7 @@ const UserAddPage: FC<{ navigation: any }> = ({ navigation }) => {
     }
 
 
-    const onSave = () => {
+    const onSave = async () => {
         console.log('Save');
         const user: User = {
             full_name: full_name,
@@ -31,64 +33,68 @@ const UserAddPage: FC<{ navigation: any }> = ({ navigation }) => {
             year: year,
             faculty: faculty,
         }
+        UserModel.addUser(user);
+        navigation.navigate('StudentListPage');
     };
 
     return (
-        <ScrollView>
-            <View style={styles.container}>
-                <Image style={styles.avatar} source={require('../assets/avatar.jpeg')} />
+        <KeyboardAvoidingView style={styles.container} behavior='padding' >
+            <ScrollView>
+                <View style={styles.container}>
+                    <Image style={styles.avatar} source={require('../assets/avatar.jpeg')} />
+                    <TextInput
+                        style={styles.input}
+                        onChangeText={setFullName}
+                        value={full_name}
+                        placeholder="Enter your Full Name"
+                    />
+                    <TextInput
+                        style={styles.input}
+                        onChangeText={setEmail}
+                        value={email}
+                        placeholder="Enter your email"
+                    />
+                    <TextInput
+                        style={styles.input}
+                        onChangeText={setPassword}
+                        value={password}
+                        placeholder="Enter Password"
+                    />
+                    <TextInput
+                        style={styles.input}
+                        onChangeText={setProfilePicture}
+                        value={profile_picture}
+                        placeholder="add your profile picture"
+                    />
+                    <TextInput
+                        style={styles.input}
+                        onChangeText={setGender}
+                        value={gender}
+                        placeholder="Enter your Gender"
+                    />
                 <TextInput
-                    style={styles.input}
-                    onChangeText={setFullName}
-                    value={full_name}
-                    placeholder="Enter your Full Name"
-                />
-                <TextInput
-                    style={styles.input}
-                    onChangeText={setEmail}
-                    value={email}
-                    placeholder="Enter your email"
-                />
-                <TextInput
-                    style={styles.input}
-                    onChangeText={setPassword}
-                    value={password}
-                    placeholder="Enter Password"
-                />
-                <TextInput
-                    style={styles.input}
-                    onChangeText={setProfilePicture}
-                    value={profile_picture}
-                    placeholder="add your profile picture"
-                />
-                <TextInput
-                    style={styles.input}
-                    onChangeText={setGender}
-                    value={gender}
-                    placeholder="Enter your Gender"
-                />
-            <TextInput
-                    style={styles.input}
-                    onChangeText={setFaculty}
-                    value={faculty}
-                    placeholder="Enter your Faculty"
-                />
-                <TextInput
-                    style={styles.input}
-                    onChangeText={setYear}
-                    value={year}
-                    placeholder="Enter your year of studies"
-                />
-                <View style={styles.buttons}>
-                    <TouchableOpacity style={styles.button} onPress={onCancel}>
-                        <Text style={styles.buttonText}>CANCEL</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.button} onPress={onSave}>
-                        <Text style={styles.buttonText}>SAVE</Text>
-                    </TouchableOpacity>
+                        style={styles.input}
+                        onChangeText={setFaculty}
+                        value={faculty}
+                        placeholder="Enter your Faculty"
+                    />
+                    <TextInput
+                        style={styles.input}
+                        onChangeText={setYear}
+                        value={year}
+                        placeholder="Enter your year of studies"
+                    />
+                    <View style={styles.buttons}>
+                        <TouchableOpacity style={styles.button} onPress={onCancel}>
+                            <Text style={styles.buttonText}>CANCEL</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.button} onPress={onSave}>
+                            <Text style={styles.buttonText}>SAVE</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
-            </View>
-        </ScrollView>
+            </ScrollView>
+        </KeyboardAvoidingView>
     );
 }
 
@@ -97,6 +103,12 @@ const styles = StyleSheet.create({
         marginTop: StatusBar.currentHeight,
         flex: 1,
         flexDirection: 'column',
+        alignSelf: 'center',
+        // alignItems: 'center',
+        // justifyContent: 'center',
+        width: '100%',
+        // paddingHorizontal: 10
+
     },
     title: {
         fontSize: 30,
