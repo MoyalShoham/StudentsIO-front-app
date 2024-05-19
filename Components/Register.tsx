@@ -4,6 +4,8 @@ import UserModel, {User} from '../Model/UserModel';
 // import axios from 'axios';
 import * as ImagePicker from 'expo-image-picker';
 import Ionicons from '@expo/vector-icons/Ionicons'
+import FormData from 'form-data';
+import axios from 'axios';
 
 
 
@@ -48,6 +50,13 @@ const UserAddPage: FC<{ navigation: any }> = ({ navigation }) => {
         }
     
     }
+    const upload_image = async () => {
+        let body = new FormData();
+        body.append('file', {uri: profile_picture, name: full_name + "profile-picture", type: 'image/jpg'});
+        let url = 'http://172.20.10.4:3000/files/file';
+        const res = await axios.post(url, body);
+
+    }
 
     useEffect(() => {
         request_permission();
@@ -59,6 +68,8 @@ const UserAddPage: FC<{ navigation: any }> = ({ navigation }) => {
 
 
     const onSave = async () => {
+       
+        upload_image();
         console.log('Save');
         const user: User = {
             full_name: full_name,
