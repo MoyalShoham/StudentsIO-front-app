@@ -11,9 +11,8 @@ const Home_Page: FC<{ navigation: any }> = ({ navigation }) => {
 
     const [data, setData] = useState<Post[]>([]);
     
-    const onItemSelected = (id: string) => {
-        console.log('Item selected: ' + id);
-        navigation.navigate('Post-Details', { _pid: id });
+    const onItemSelected = (_id: string) => {
+        
     }
 
     useEffect(() => {
@@ -45,21 +44,27 @@ const Home_Page: FC<{ navigation: any }> = ({ navigation }) => {
     }, [])
 
 
+    const keyExtractor = (item: Post) => item._id;
+
+    const renderItem = ({ item }: { item: Post }) => (
+        console.log(item),
+        <Post_List_Row
+            owner={item.owner}
+            message={item.message}
+            date={item.date}
+            image={item.image}
+            _id={item._id}
+            onItemSelected={onItemSelected}
+        />
+    )
+
+
     return (
         <FlatList
             style={styles.flatList}
             data={data}
-            keyExtractor={(item) => item._pid ?? ''}
-            renderItem={({ item }) => (
-                <Post_List_Row
-                    owner={item.owner}
-                    message={item.message}
-                    date={item.date}
-                    image={item.image}
-                    _pid={item._pid ?? ''}                    
-                    onItemSelected={onItemSelected}
-                />
-            )}
+            keyExtractor={keyExtractor}
+            renderItem={renderItem}
         />
     )
 }

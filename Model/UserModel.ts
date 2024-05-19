@@ -1,5 +1,6 @@
 import { useRoute } from "@react-navigation/native";
 import axios from "axios";
+import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
 export type User = {
     _id?: string;
@@ -56,6 +57,11 @@ const getUser = async ()  => {
     return res.data;
 }
 
+const getUserById = async (id: string): Promise<User>=> {
+    const res = await axios.get(`http://172.20.10.4:3000/auth/user/${id}`);
+    return res.data;
+}
+
 const addUser = async (user: User) => {
     await axios.post('http://172.20.10.4:3000/auth/register', user);
 }
@@ -65,4 +71,4 @@ const deleteUser = () => {
     
 }
 
-export default { getAllUsers, getUser, addUser, deleteUser, log_in };
+export default { getAllUsers, getUser, addUser, deleteUser, log_in, getUserById };

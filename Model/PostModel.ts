@@ -4,7 +4,7 @@ import UserModel, { User } from "./UserModel";
 export type Post = {
     owner: string;
     message: string;
-    _pid?: string;
+    _id: string;
     image: string;
     date: Date;
 }
@@ -24,9 +24,9 @@ const getAllPosts = async (accessToken: string): Promise<Post[]> => {
     }
 }
 
-const getPost = (id: string): Post | undefined => {
-    const res = data.find((post) => post._pid == id);
-    return res ? res : undefined;
+const getPost = async (id: string): Promise<Post | undefined> => {
+   const p = axios.get(`http://172.20.10.4:3000/post/${id}`);
+   return (await p).data;
 }
 
 const addPost = (post: Post) => {
@@ -34,7 +34,7 @@ const addPost = (post: Post) => {
 }
 
 const deletePost = (id: string) => {
-    const index = data.findIndex((post) => post._pid === id);
+    const index = data.findIndex((post) => post._id === id);
     if (index !== -1) {
         data.splice(index, 1);
     }

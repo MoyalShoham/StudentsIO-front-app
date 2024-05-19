@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image, TouchableHighlight } from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableHighlight, TouchableOpacity } from 'react-native';
 import React, { useState, useEffect, FC } from 'react';
 import PostModel from '../Model/PostModel';
 import UserModel, { User } from '../Model/UserModel';
@@ -8,23 +8,28 @@ import UserModel, { User } from '../Model/UserModel';
 const Post_List_Row: FC<{
     owner: string,
     message: string,
-    _pid: string,
+    _id: string,
     date: Date,
     image: string,
     onItemSelected: (id: string) => void
-}> = ({ _pid, message, image, date, owner, onItemSelected }) => {
+}> = ({ _id, message, image, date, owner, onItemSelected }) => {
 
     const [user, setUser] = useState<User>();
 
+    const getUser = async (id: string): Promise<User> => {
+        setUser(await UserModel.getUserById(id));
+        return user as User;
+    }
     useEffect(() => {
         const fetchData = async () => {
-            setUser(await UserModel.getUser());
+            // setUser(await UserModel.getUser());
+            getUser(owner);
         };
         fetchData();
     }, []);
 
     const onPress = () => {
-        onItemSelected(_pid);
+        onItemSelected(_id);
     };
 
     if (!owner) {
@@ -36,7 +41,7 @@ const Post_List_Row: FC<{
     }
 
     return (
-        <TouchableHighlight onPress={onPress} underlayColor={'grey'}>
+        <TouchableOpacity onPress={onPress} >
             <View style={styles.listrow}>
                 {
                     user?.profile_picture === '' ?
@@ -45,19 +50,24 @@ const Post_List_Row: FC<{
                         <Image style={styles.avatar} source={{ uri: user?.profile_picture }} />
                 }
                 <View style={styles.info}>
-                    <Text style={styles.name}>{user?.full_name}</Text>
+                    {owner &&  (
+                        <Text style={styles.name}>
+                            { user ? user.full_name : 'Fuck me...'}
+                        </Text>
+                    )}
                     <Text style={styles.other}>{user?.faculty + ' year: ' + user?.year}</Text>
                     <Text style={styles.other}>{message}</Text>
-                    <Text style={styles.other}>{'Ahshav'}</Text>
-                    {
-                        image === '' ?
-                            <Image style={styles.avatar} source={require('../assets/avatar.jpeg')} />
-                            :
-                            <Image style={styles.avatar} source={{ uri: image }} />
-                    }
+                    <Text style={styles.other}>{date.toString()}</Text>
+                    <Text style={styles.other}>{_id}</Text>
+
+                    {image === '' ? (
+                        <Image style={styles.avatar} source={require('../assets/avatar.jpeg')} />
+                    ) : (
+                        <Image style={styles.avatar} source={{ uri: image }} />
+                    )}
                 </View>
             </View>
-        </TouchableHighlight>
+        </TouchableOpacity>
     );
 };
 

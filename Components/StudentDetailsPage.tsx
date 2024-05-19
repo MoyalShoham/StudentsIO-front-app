@@ -4,7 +4,7 @@ import UserModel from '../Model/UserModel';
 
 
 const StudentDetailsPage: FC<{ route: any, navigation: any }> = ({ route, navigation }) => {
-    const user = UserModel.getUser(route.params.id)? UserModel.getUser(route.params.id): undefined;
+    const user = UserModel.getUser(route.params.id);
     
 
     useEffect(() => {
