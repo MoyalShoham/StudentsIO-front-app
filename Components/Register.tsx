@@ -1,7 +1,11 @@
 import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView, Button, Alert, TextInput, StatusBar, KeyboardAvoidingView } from 'react-native';
-import React, { useState, FC } from 'react';
+import React, { useState, FC, useEffect } from 'react';
 import UserModel, {User} from '../Model/UserModel';
-import axios from 'axios';
+// import axios from 'axios';
+import * as ImagePicker from 'expo-image-picker';
+import Ionicons from '@expo/vector-icons/Ionicons'
+
+
 
 
 const UserAddPage: FC<{ navigation: any }> = ({ navigation }) => {
@@ -13,6 +17,41 @@ const UserAddPage: FC<{ navigation: any }> = ({ navigation }) => {
     const [gender, setGender] = useState('');
     const [profile_picture, setProfilePicture] = useState('');
 
+
+    const request_permission = async () => {
+        const res = await ImagePicker.requestCameraPermissionsAsync();
+        if (!res.granted){
+            alert('you need accept camera permission');
+        }
+    }
+    
+    const select_image = async () => {
+        try{
+            const res = await ImagePicker.launchCameraAsync()
+            if(!res.canceled && res.assets.length > 0){
+                setProfilePicture(res.assets[0].uri);
+                console.log(res.assets[0].uri);
+            }
+        } catch (err) {
+            console.log(err)
+        }
+    }
+    const open_gallery = async () => {
+        try{
+            const res = await ImagePicker.launchImageLibraryAsync()
+            if(!res.canceled && res.assets.length > 0){
+                setProfilePicture(res.assets[0].uri);
+                console.log(res.assets[0].uri);
+            }
+        } catch (err) {
+            console.log(err)
+        }
+    
+    }
+
+    useEffect(() => {
+        request_permission();
+    }, []);
     const onCancel = () => {
         console.log('Cancel');
         navigation.navigate('UserListPage');
@@ -40,7 +79,22 @@ const UserAddPage: FC<{ navigation: any }> = ({ navigation }) => {
         <KeyboardAvoidingView style={styles.container} behavior='padding' >
             <ScrollView>
                 <View style={styles.container}>
-                    <Image style={styles.avatar} source={require('../assets/avatar.jpeg')} />
+                    { 
+                        (profile_picture === '') ?
+                        <Image style={styles.avatar} source={require('../assets/avatar.jpeg')} />
+                        :
+                        <Image style={styles.avatar} source={{ uri: profile_picture }} />
+                    }
+
+                    <View style={{flexDirection: 'row'}}>
+                        <TouchableOpacity onPress={select_image}>
+                            <Ionicons name="camera" size={30} color="black" />
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={open_gallery}>
+                            <Ionicons name="image" size={30} color="black" />
+                        </TouchableOpacity>
+                    </View>
+                    
                     <TextInput
                         style={styles.input}
                         onChangeText={setFullName}
@@ -59,12 +113,7 @@ const UserAddPage: FC<{ navigation: any }> = ({ navigation }) => {
                         value={password}
                         placeholder="Enter Password"
                     />
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={setProfilePicture}
-                        value={profile_picture}
-                        placeholder="add your profile picture"
-                    />
+                
                     <TextInput
                         style={styles.input}
                         onChangeText={setGender}
