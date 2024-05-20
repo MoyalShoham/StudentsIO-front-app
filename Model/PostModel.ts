@@ -4,18 +4,18 @@ import UserModel, { User } from "./UserModel";
 export type Post = {
     owner: string;
     message: string;
-    _id: string;
+    _id?: string;
     image: string;
-    date: Date;
+    date: string;
 }
 
 const data: Post[] = [
 ];
 
-const getAllPosts = async (accessToken: string): Promise<Post[]> => {
+const getAllPosts = async (): Promise<Post[]> => {
     try {
         const response = await axios.get('http://172.20.10.4:3000/post/all/posts', {
-            headers: { Authorization: `Bearer ${accessToken}` }
+            headers: { Authorization: `Bearer ${UserModel.getAccessTokens()}` }
         });
         return response.data;
     } catch (error) {
@@ -25,12 +25,27 @@ const getAllPosts = async (accessToken: string): Promise<Post[]> => {
 }
 
 const getPost = async (id: string): Promise<Post | undefined> => {
-   const p = axios.get(`http://172.20.10.4:3000/post/${id}`);
-   return (await p).data;
+    const accessToken = UserModel.getAccessTokens();
+    const p = axios.get(`http://172.20.10.4:3000/post/`, {
+        headers: { "Authorization": "Bearer " + accessToken }
+    });
+    return (await p).data;
 }
 
-const addPost = (post: Post) => {
-    data.push(post);
+const addPost = async (post: Post) => {
+    const accessToken = UserModel.getAccessTokens();
+    try{
+
+        console.log('access token Post: ', (await accessToken).toString());
+        await axios.post('http://172.20.10.4:3000/post/upload', post, {
+            headers: { "Authorization": "Bearer " + (await accessToken).toString() }
+        }).then((res) => {console.log(res.data)});
+    } catch (err) {
+
+        console.log(err);
+    }
+    
+    
 }
 
 const deletePost = (id: string) => {
@@ -44,8 +59,8 @@ const getOwner = async (id: string): Promise<User> => {
     const post = getPost(id);
     
     const user = await UserModel.getUser();
-    const u = user?.data;
-    return u ? u : undefined;
+    // const u = user?.data;
+    return user as User;
 }
 
 export default { getAllPosts, getPost, addPost, deletePost, getOwner };

@@ -6,18 +6,29 @@ import * as ImagePicker from 'expo-image-picker';
 import Ionicons from '@expo/vector-icons/Ionicons'
 import FormData from 'form-data';
 import axios from 'axios';
+import PostModel, { Post } from '../Model/PostModel';
 
 
 
 
-const UserAddPage: FC<{ navigation: any }> = ({ navigation }) => {
+const PostAddPage: FC<{ navigation: any }> = ({ navigation }) => {
+
     const [full_name, setFullName] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [year, setYear] = useState('');
-    const [faculty, setFaculty] = useState('');
-    const [gender, setGender] = useState('');
-    const [profile_picture, setProfilePicture] = useState('none');
+    const [profile_picture, setProfilePicture] = useState('');
+    const [message, setMessage] = useState('');
+    const [image, setImage] = useState('none');
+    const [date, setDate] = useState('');
+    const [owner, setOwner] = useState('');
+    UserModel.getUser().then((res) => {
+
+        setFullName(res.full_name);
+        setProfilePicture(res.profile_picture);
+        setOwner(res._id as string)
+
+    });
+
+
+ 
 
 
     const request_permission = async () => {
@@ -31,7 +42,7 @@ const UserAddPage: FC<{ navigation: any }> = ({ navigation }) => {
         try{
             const res = await ImagePicker.launchCameraAsync()
             if(!res.canceled && res.assets.length > 0){
-                setProfilePicture(res.assets[0].uri);
+                setImage(res.assets[0].uri);
                 console.log(res.assets[0].uri);
             }
         } catch (err) {
@@ -42,7 +53,7 @@ const UserAddPage: FC<{ navigation: any }> = ({ navigation }) => {
         try{
             const res = await ImagePicker.launchImageLibraryAsync()
             if(!res.canceled && res.assets.length > 0){
-                setProfilePicture(res.assets[0].uri);
+                setImage(res.assets[0].uri);
                 console.log(res.assets[0].uri);
             }
         } catch (err) {
@@ -52,41 +63,43 @@ const UserAddPage: FC<{ navigation: any }> = ({ navigation }) => {
     }
     const upload_image = async () => {
         let body = new FormData();
-        body.append('file', {uri: profile_picture, name: full_name + "profile-picture", type: 'image/jpeg'});
+        setDate(new Date().toLocaleString("en-US", {
+            year: 'numeric', month: 'numeric', day: 'numeric',
+            hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
+          }));
+        body.append('file', {uri: image, name: full_name + "profile-picture", type: 'image/jpeg'});
         let url = 'http://172.20.10.4:3000/files/file';
         const res = await axios.post(url, body);
-        console.log(res.data.url);
-        const user: User = {
-            full_name: full_name,
-            email: email,
-            password: password,
-            profile_picture: res.data.url,
-            gender: gender,
-            tokens: [],
-            posts: [],
-            year: year,
-            faculty: faculty,
-        }
-        return user;
+        setImage(res.data.url);
+        const post: Post = {
+            owner: owner,
+            message: message,
+            image: res.data.url,
+            date: date
+        } 
+        return post;
 
     }
 
+
     useEffect(() => {
         request_permission();
+        
     }, []);
     const onCancel = () => {
         console.log('Cancel');
-        navigation.navigate('UserListPage');
+        navigation.navigate('Home-Page');
     }
 
 
     const onSave = async () => {
        
-        const user = upload_image().then((user) => {
-            console.log(user);
-            UserModel.addUser(user);
-            navigation.navigate('Sign_In');
+        upload_image().then((post) => {
+            console.log(post);
+            PostModel.addPost(post);
+            navigation.navigate('Home-Page');
         });
+        
     };
 
     return (
@@ -94,10 +107,10 @@ const UserAddPage: FC<{ navigation: any }> = ({ navigation }) => {
             <ScrollView>
                 <View style={styles.container}>
                     { 
-                        (profile_picture === 'none') ?
+                        (image === 'none') ?
                         <Image style={styles.avatar} source={require('../assets/avatar.jpeg')} />
                         :
-                        <Image style={styles.avatar} source={{ uri: profile_picture }} />
+                        <Image style={styles.avatar} source={{ uri: image }} />
                     }
 
                     <View style={{flexDirection: 'row'}}>
@@ -111,41 +124,11 @@ const UserAddPage: FC<{ navigation: any }> = ({ navigation }) => {
                     
                     <TextInput
                         style={styles.input}
-                        onChangeText={setFullName}
-                        value={full_name}
-                        placeholder="Enter your Full Name"
+                        onChangeText={setMessage}
+                        value={message}
+                        placeholder={`what you want to share, ${full_name}?`}
                     />
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={setEmail}
-                        value={email}
-                        placeholder="Enter your email"
-                    />
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={setPassword}
-                        value={password}
-                        placeholder="Enter Password"
-                    />
-                
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={setGender}
-                        value={gender}
-                        placeholder="Enter your Gender"
-                    />
-                <TextInput
-                        style={styles.input}
-                        onChangeText={setFaculty}
-                        value={faculty}
-                        placeholder="Enter your Faculty"
-                    />
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={setYear}
-                        value={year}
-                        placeholder="Enter your year of studies"
-                    />
+               
                     <View style={styles.buttons}>
                         <TouchableOpacity style={styles.button} onPress={onCancel}>
                             <Text style={styles.buttonText}>CANCEL</Text>
@@ -203,4 +186,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default UserAddPage;
+export default PostAddPage;

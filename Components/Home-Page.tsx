@@ -1,14 +1,11 @@
 import { FC, useEffect, useState } from "react";
 import { FlatList, Text, StyleSheet, Button } from "react-native";
-import StudentListRow from "./StudentListRow";
 import UserModel, { User } from "../Model/UserModel";
 import PostModel, { Post } from "../Model/PostModel";
 import Post_List_Row from "./PostListRow";
-import { useRoute } from "@react-navigation/native";
 
 const Home_Page: FC<{ navigation: any }> = ({ navigation }) => {
-    const {accessToken} = useRoute().params as {accessToken: string};
-
+    const accessToken = UserModel.getAccessTokens();
     const [data, setData] = useState<Post[]>([]);
     
     const onItemSelected = (_id: string) => {
@@ -20,7 +17,7 @@ const Home_Page: FC<{ navigation: any }> = ({ navigation }) => {
         console.log('focus')
         let posts: Post[] = [];
         try {
-            posts = await PostModel.getAllPosts(accessToken);
+            posts = await PostModel.getAllPosts();
             console.log(posts)
         } catch (err) {
             setData(Array<Post>());
@@ -44,16 +41,15 @@ const Home_Page: FC<{ navigation: any }> = ({ navigation }) => {
     }, [])
 
 
-    const keyExtractor = (item: Post) => item._id;
+    const keyExtractor = (item: Post) => item._id as string;
 
     const renderItem = ({ item }: { item: Post }) => (
-        console.log(item),
         <Post_List_Row
             owner={item.owner}
             message={item.message}
-            date={item.date}
+            date={item.date as string}
             image={item.image}
-            _id={item._id}
+            _id={item._id as string}
             onItemSelected={onItemSelected}
         />
     )

@@ -1,6 +1,7 @@
 import { useRoute } from "@react-navigation/native";
 import axios from "axios";
-import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 
 export type User = {
     _id?: string;
@@ -19,10 +20,47 @@ export type User = {
 
 
 
+const getAccessTokens = async () => {
+    return await AsyncStorage.getItem('accessToken') as string;
+}
+
+const getRefreshTokens = async () => {
+    return await AsyncStorage.getItem('refreshToken');
+}
+
+const setAccessTokens = async (accessToken: string) => {
+    await AsyncStorage.setItem('accessToken', accessToken);
+}
+
+const setRefreshTokens = async (refreshToken: string) => {
+    await AsyncStorage.setItem('refreshToken', refreshToken);
+}
+
+const deleteAccessTokens = async () => {
+    await AsyncStorage.removeItem('accessToken');
+}
+
+const deleteRefreshTokens = async () => {
+    await AsyncStorage.removeItem('refreshToken');
+}
+
+const deleteTokens = async () => {
+    await deleteAccessTokens();
+    await deleteRefreshTokens();
+}
+
+const setTokens = async (accessToken: string, refreshToken: string) => {
+    await deleteTokens();
+    await setAccessTokens(accessToken);
+    await setRefreshTokens(refreshToken);
+}
+
+
+
 
 
 const getAllUsers = async () => {
-    const res: any = await axios.get('http://172.20.10.4:3000/auth/users')
+    const res: any = await axios.get('http://172.20.10.4:3000/auth/users');
     let users = Array<User>();
     if (res.data) {
         res.data.forEach((obj: any) => {
@@ -45,20 +83,26 @@ const getAllUsers = async () => {
 }
 
 const log_in = async (email: string, password: string) => {
-    return await axios.post('http://172.20.10.4:3000/auth/login', { email, password });
+    const res = await axios.post('http://172.20.10.4:3000/auth/login', { email, password }).then(
+        async (res) => {
+            await setTokens(res.data.accessToken, res.data.refreshToken);
+            console.log('Access Token / userModel: ', res.data.accessToken);
+        }
+    
+    ).catch((err) => {console.log(err.response.data); console.log(err.response.status);});
 }
 
-const getUser = async ()  => {
-    const accessToken = useRoute().params as { accessToken: string };
+const getUser = async () : Promise<User>  => {
+    const accessToken = await getAccessTokens();
     const res = await axios.get(`http://172.20.10.4:3000/auth/user`,{ 
-        headers: { Authorization: `Bearer ${accessToken}` 
-    }
+         headers: { "Authorization": "Bearer " + accessToken }  
     });
     return res.data;
 }
 
 const getUserById = async (id: string): Promise<User>=> {
-    const res = await axios.get(`http://172.20.10.4:3000/auth/user/${id}`);
+    const accessToken = await getAccessTokens();
+    const res = await axios.get(`http://172.20.10.4:3000/auth/user`, { headers: { "Authorization": "Bearer " + accessToken } });
     return res.data;
 }
 
@@ -71,4 +115,4 @@ const deleteUser = () => {
     
 }
 
-export default { getAllUsers, getUser, addUser, deleteUser, log_in, getUserById };
+export default { getAllUsers, getUser, addUser, deleteUser, log_in, getUserById, getAccessTokens, getRefreshTokens, setAccessTokens, setRefreshTokens, deleteAccessTokens, deleteRefreshTokens, deleteTokens, setTokens};

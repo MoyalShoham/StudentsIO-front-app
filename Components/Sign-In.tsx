@@ -1,7 +1,6 @@
 import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView, Button, Alert, TextInput, StatusBar, KeyboardAvoidingView } from 'react-native';
 import React, { useState, FC } from 'react';
 import UserModel, {User} from '../Model/UserModel';
-import axios from 'axios';
 
 
 const Sign_In: FC<{ navigation: any }> = ({ navigation }) => {
@@ -24,10 +23,10 @@ const Sign_In: FC<{ navigation: any }> = ({ navigation }) => {
             password: password,
         }
         
-        const accessToken = UserModel.log_in(user.email, user.password);
-
+        await UserModel.log_in(user.email, user.password);
+        
         // navigate to home screen (posts of other users)
-        navigation.navigate('Home-Page', {accessToken: (await accessToken).data.accessToken});
+        navigation.navigate('Home-Page');
     };
 
     return (

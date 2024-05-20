@@ -9,6 +9,7 @@ import UserAddPage from './Components/Register';
 import Sign_In from './Components/Sign-In';
 import Home_Page from './Components/Home-Page';
 import StartPage from './Components/Start-Page';
+import PostAddPage from './Components/AddNewPost';
 // import PostDetailsPage from './Components/PostDetailsPage';
 
 // const Stack = createNativeStackNavigator();
@@ -23,6 +24,8 @@ const StudentsListScreen: FC = () => {
       <StudentsListStack.Screen name="StudentDetailsPage" component={StudentDetailsPage} options={{ title: 'Student Details' }} />
       <StudentsListStack.Screen name="Register" component={UserAddPage} options={{ title: 'Sign Up' }} />
       <StudentsListStack.Screen name="Sign_In" component={Sign_In} options={{ title: 'Sign In' }} />
+      <StudentsListStack.Screen name="Add-Post" component={PostAddPage} options={{ title: 'Add New Post' }} />
+
       {/* <StudentsListStack.Screen name="Post-Details" component={PostDetailsPage} options={{ title: 'Post Details' }} /> */}
 
     </StudentsListStack.Navigator>
