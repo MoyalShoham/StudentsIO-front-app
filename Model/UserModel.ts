@@ -115,4 +115,9 @@ const deleteUser = () => {
     
 }
 
-export default { getAllUsers, getUser, addUser, deleteUser, log_in, getUserById, getAccessTokens, getRefreshTokens, setAccessTokens, setRefreshTokens, deleteAccessTokens, deleteRefreshTokens, deleteTokens, setTokens};
+const editUser = async (user: User) => {
+    const accessToken = await getAccessTokens();
+    await axios.put('http://172.20.10.4:3000/auth/update', user, { headers: { "Authorization": "Bearer " + accessToken } });
+}
+
+export default { getAllUsers, getUser, addUser, deleteUser, log_in, getUserById, getAccessTokens, getRefreshTokens, setAccessTokens, setRefreshTokens, deleteAccessTokens, deleteRefreshTokens, deleteTokens, setTokens, editUser};

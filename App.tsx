@@ -10,6 +10,7 @@ import Sign_In from './Components/Sign-In';
 import Home_Page from './Components/Home-Page';
 import StartPage from './Components/Start-Page';
 import PostAddPage from './Components/AddNewPost';
+import EditUserPage from './Components/EditProfilePage';
 // import PostDetailsPage from './Components/PostDetailsPage';
 
 // const Stack = createNativeStackNavigator();
@@ -37,7 +38,7 @@ export default function App() {
     <NavigationContainer>
       <Tab.Navigator>
         <Tab.Screen name="StudentsListScreen" component={StudentsListScreen} options={{ headerShown: false }} />
-        <Tab.Screen name="Register" component={UserAddPage} options={{ title: 'Add New Student' }} />
+        <Tab.Screen name="Edit-User" component={EditUserPage} options={{ title: 'Edit User' }} />
 
       </Tab.Navigator>
     </NavigationContainer >
