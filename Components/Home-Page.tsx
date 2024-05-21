@@ -18,7 +18,6 @@ const Home_Page: FC<{ navigation: any }> = ({ navigation }) => {
         let posts: Post[] = [];
         try {
             posts = await PostModel.getAllPosts();
-            console.log(posts)
         } catch (err) {
             setData(Array<Post>());
             console.log("fail fetching posts " + err)

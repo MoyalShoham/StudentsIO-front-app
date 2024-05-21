@@ -81,7 +81,6 @@ const EditUserPage: FC<{ navigation: any }> = ({ navigation }) => {
     useEffect(() => {
         const fetchUser = async () => {
             const user = await getUser();
-            console.log('user:', user[0]);
             setFullName(user.full_name);
             setEmail(user.email);
             setYear(user.year);

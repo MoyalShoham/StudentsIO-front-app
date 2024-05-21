@@ -121,4 +121,18 @@ const editUser = async (user: User) => {
     await axios.put('http://172.20.10.4:3000/auth/update', user, { headers: { "Authorization": "Bearer " + accessToken } });
 }
 
-export default { getAllUsers, getUser, addUser, deleteUser, log_in, getUserById, getAccessTokens, getRefreshTokens, setAccessTokens, setRefreshTokens, deleteAccessTokens, deleteRefreshTokens, deleteTokens, setTokens, editUser};
+const isLoggedIn = async () => {
+    try {
+        const user = await getUser();
+        return true;
+    } catch (error) {
+        return false;
+    }
+}
+
+const log_out = async () => {
+    await deleteTokens();
+
+}
+
+export default {log_out, isLoggedIn, getAllUsers, getUser, addUser, deleteUser, log_in, getUserById, getAccessTokens, getRefreshTokens, setAccessTokens, setRefreshTokens, deleteAccessTokens, deleteRefreshTokens, deleteTokens, setTokens, editUser};
