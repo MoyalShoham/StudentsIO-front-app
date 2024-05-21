@@ -17,8 +17,10 @@ const Post_List_Row: FC<{
     const [im, setIm] = useState('none')
     const fetchUser = async () => {
         try {
-            const fetchedUser = await UserModel.getUser();
+            console.log('owner:', owner);
+            const fetchedUser = await UserModel.getUserById(owner);
             setUser(fetchedUser);
+            console.log('user:', user);
             setProfile_picture(user?.profile_picture.replace('\\', '/') ?? 'none');
             console.log(profile_picture);
             setIm(image.replace('\\', '/'));

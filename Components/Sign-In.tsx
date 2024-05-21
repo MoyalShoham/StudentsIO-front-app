@@ -23,8 +23,8 @@ const Sign_In: FC<{ navigation: any }> = ({ navigation }) => {
             password: password,
         }
         
-        await UserModel.log_in(user.email, user.password);
-        
+        const bool = await UserModel.log_in(user.email, user.password);
+
         // navigate to home screen (posts of other users)
         navigation.navigate('Home-Page');
     };

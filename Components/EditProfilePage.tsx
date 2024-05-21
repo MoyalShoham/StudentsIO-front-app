@@ -63,7 +63,7 @@ const EditUserPage: FC<{ navigation: any }> = ({ navigation }) => {
         let url = 'http://172.20.10.4:3000/files/file';
         const res = await axios.post(url, body);
         console.log(res.data.url);
-        const user: User = {
+        const user: any = {
             full_name: full_name,
             email: email,
             password: password,
@@ -79,16 +79,19 @@ const EditUserPage: FC<{ navigation: any }> = ({ navigation }) => {
     }
 
     useEffect(() => {
-        const user = getUser().then((user) => {
+        const fetchUser = async () => {
+            const user = await getUser();
+            console.log('user:', user[0]);
             setFullName(user.full_name);
             setEmail(user.email);
             setYear(user.year);
             setFaculty(user.faculty);
             setGender(user.gender);
-            setProfilePicture(user.profile_picture.replace('\\', '/'));
+            setProfilePicture(user.profile_picture.replace('\\', '/') ?? 'none');
             setPassword(user.password);
     
-        });
+        }
+        fetchUser();
         request_permission();
     }, []);
     const onCancel = () => {
