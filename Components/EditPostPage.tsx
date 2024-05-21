@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity, Button, TextInput, StatusBar } from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity, Button, TextInput, StatusBar, Alert } from 'react-native';
 import React, { useState, useEffect, FC } from 'react';
 import PostModel from '../Model/PostModel';
 import UserModel, { User } from '../Model/UserModel';
@@ -12,6 +12,7 @@ import { Ionicons } from '@expo/vector-icons';
 const EditPostScreen: FC<{
     route: any,
 }> = ({ route }) => {
+    const [confirm, setConfirm] = useState(false);
     const { _id } = route.params;
     const navigator = useNavigation();
     const [im, setIm] = useState('none')
@@ -85,6 +86,35 @@ const EditPostScreen: FC<{
         navigator.navigate('My-Posts' as never);
         
     };
+
+    const onDelete = async () => {
+        
+        PostModel.deletePost(_id).then(() => navigator.navigate('My-Posts' as never))
+    }
+
+    useEffect(() => {
+        navigator.setOptions({
+            headerRight: () => (
+                <Button
+                    onPress={() =>
+                        Alert.alert(
+                            "Delete Post",
+                            "Are you sure you want to delete this post?",
+                            [
+                                {
+                                    text: "Cancel",
+                                    onPress: () => console.log("Cancel Pressed"),
+                                    style: "cancel"
+                                },
+                                { text: "OK", onPress: () => onDelete() }
+                            ]
+                        )
+                    }
+                    title="Delete"
+                />
+            ),
+        })
+    }, [])
 
 
     useEffect(() => {

@@ -56,10 +56,16 @@ const addPost = async (post: Post) => {
     
 }
 
-const deletePost = (id: string) => {
-    const index = data.findIndex((post) => post._id === id);
-    if (index !== -1) {
-        data.splice(index, 1);
+const deletePost = async (id: string) => {
+    const accessToken = UserModel.getAccessTokens();
+    try {
+        await axios.delete(`http://172.20.10.4:3000/post/${id}`, {
+            headers: { "Authorization": "Bearer " + (await accessToken).toString() }
+        });
+        return true;
+    } catch (error) {
+        console.error('Error deleting post:', error);
+        throw error; // Re-throw the error if you want to handle it outside this function
     }
 }
 

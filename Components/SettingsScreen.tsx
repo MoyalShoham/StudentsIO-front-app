@@ -21,7 +21,8 @@ const SettingsScreen: React.FC = () => {
         // Navigate to EditUserScreen
     };
 
-    const handleResetPassword = () => {
+    const handleHome = () => {
+        navigator.navigate('Home-Page' as never);
         // Navigate to ResetPasswordScreen
     };
 
@@ -31,7 +32,7 @@ const SettingsScreen: React.FC = () => {
             <Button title="Log Out" onPress={handleLogout} />
             <Button title="Edit Posts" onPress={handleEditPosts} />
             <Button title="Edit User" onPress={handleEditUser} />
-            <Button title="Reset Password" onPress={handleResetPassword} />
+            <Button title="Home" onPress={handleHome} />
         </View>
     );
 };
