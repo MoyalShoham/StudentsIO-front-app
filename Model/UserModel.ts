@@ -93,6 +93,7 @@ const log_in = async (email: string, password: string) => {
 }
 
 const getUser = async () : Promise<User>  => {
+    await checkUser();
     const accessToken = await getAccessTokens();
     console.log('Access Token / userModel: ', accessToken);
     const res = await axios.get(`http://172.20.10.4:3000/auth/user`,{ 
@@ -102,6 +103,7 @@ const getUser = async () : Promise<User>  => {
 }
 
 const getUserById = async (id: string): Promise<User>=> {
+    await checkUser();
     const res = await axios.get(`http://172.20.10.4:3000/auth/user/${id}`);
     console.log('User:', res.data);
     return res.data;
@@ -134,5 +136,12 @@ const log_out = async () => {
     await deleteTokens();
 
 }
+const checkUser = async () => {
+    const accessToken = await getAccessTokens();
+    console.log('checkk');
+    await axios.get('http://172.20.10.4:3000/auth/user',
+        {headers: { "Authorization": "Bearer " + accessToken } }
+    );
+}
 
-export default {log_out, isLoggedIn, getAllUsers, getUser, addUser, deleteUser, log_in, getUserById, getAccessTokens, getRefreshTokens, setAccessTokens, setRefreshTokens, deleteAccessTokens, deleteRefreshTokens, deleteTokens, setTokens, editUser};
+export default {checkUser, log_out, isLoggedIn, getAllUsers, getUser, addUser, deleteUser, log_in, getUserById, getAccessTokens, getRefreshTokens, setAccessTokens, setRefreshTokens, deleteAccessTokens, deleteRefreshTokens, deleteTokens, setTokens, editUser};

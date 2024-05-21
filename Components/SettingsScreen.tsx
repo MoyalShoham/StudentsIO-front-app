@@ -12,10 +12,12 @@ const SettingsScreen: React.FC = () => {
     };
 
     const handleEditPosts = () => {
+        navigator.navigate('My-Posts' as never);
         // Navigate to EditPostsScreen
     };
 
     const handleEditUser = () => {
+        navigator.navigate('Edit-User' as never);
         // Navigate to EditUserScreen
     };
 

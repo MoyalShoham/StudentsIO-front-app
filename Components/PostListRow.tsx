@@ -9,11 +9,12 @@ const Post_List_Row: FC<{
     _id: string,
     date: Date,
     image: string,
+    profile_picture: string,
     onItemSelected: (id: string) => void
-}> = ({ _id, message, image, date, owner, onItemSelected }) => {
+}> = ({ _id, message, image, date, owner, profile_picture, onItemSelected }) => {
 
     const [user, setUser] = useState<User | null>(null);
-    const [profile_picture, setProfile_picture] = useState('none');
+    const [profile_pic, setProfile_pic] = useState(profile_picture);
     const [im, setIm] = useState('none')
     const fetchUser = async () => {
         try {
@@ -21,8 +22,8 @@ const Post_List_Row: FC<{
             const fetchedUser = await UserModel.getUserById(owner);
             setUser(fetchedUser);
             console.log('user:', user);
-            setProfile_picture(user?.profile_picture.replace('\\', '/') ?? 'none');
-            console.log(profile_picture);
+            setProfile_pic(user?.profile_picture.replace('\\', '/') ?? 'none');
+            console.log("here here", user?.profile_picture);
             setIm(image.replace('\\', '/'));
             console.log('image:', image)
         } catch (error) {
@@ -54,7 +55,7 @@ const Post_List_Row: FC<{
                     profile_picture === 'none'  ?
                         <Image style={styles.avatar} source={require('../assets/avatar.jpeg')} />
                         :
-                        <Image style={styles.avatar} source={{ uri: profile_picture }} />
+                        <Image style={styles.avatar} source={{ uri: user?.profile_picture.replace('\\', '/') }} />
                 }
                 <View style={styles.info}>
                     <Text style={styles.name}>

@@ -14,6 +14,7 @@ const data: Post[] = [
 
 const getAllPosts = async (): Promise<Post[]> => {
     try {
+        await UserModel.checkUser();
         const response = await axios.get('http://172.20.10.4:3000/post/all/posts', {
             headers: { Authorization: `Bearer ${UserModel.getAccessTokens()}` }
         });
@@ -23,6 +24,13 @@ const getAllPosts = async (): Promise<Post[]> => {
         throw error; // Re-throw the error if you want to handle it outside this function
     }
 }
+
+const getPostById = async (id: string): Promise<Post> => {
+    const response = await axios.get(`http://172.20.10.4:3000/post/${id}`);
+    return response.data;
+}
+
+
 
 const getPost = async (id: string): Promise<Post | undefined> => {
     const accessToken = UserModel.getAccessTokens();
@@ -55,6 +63,32 @@ const deletePost = (id: string) => {
     }
 }
 
+const getMyPosts = async (): Promise<Post[]> => {
+    const accessToken = UserModel.getAccessTokens();
+    try {
+        const response = await axios.get('http://172.20.10.4:3000/post/my/posts', {
+            headers: { "Authorization": "Bearer " + (await accessToken).toString() }
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching posts:', error);
+        throw error; // Re-throw the error if you want to handle it outside this function
+    }
+}
+
+const editPost = async (post: Post, id: string) => {
+    const accessToken = UserModel.getAccessTokens();
+    try {
+
+        await axios.put(`http://172.20.10.4:3000/post/${id}`, post, {
+            headers: { "Authorization": "Bearer " + (await accessToken).toString() }
+        });
+    } catch (error) {
+        console.error('Error editing post:', error);
+        throw error; // Re-throw the error if you want to handle it outside this function
+    }
+}
+
 const getOwner = async (id: string): Promise<User> => {
     const post = getPost(id);
     
@@ -63,4 +97,4 @@ const getOwner = async (id: string): Promise<User> => {
     return user as User;
 }
 
-export default { getAllPosts, getPost, addPost, deletePost, getOwner };
+export default {editPost, getPostById, getMyPosts, getAllPosts, getPost, addPost, deletePost, getOwner };

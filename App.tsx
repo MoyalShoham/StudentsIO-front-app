@@ -16,6 +16,8 @@ import SettingsScreen from './Components/SettingsScreen';
 
 // Import your authentication model
 import UserModel from './Model/UserModel';
+import MyPostsScreen from './Components/MyPosts';
+import EditPostScreen from './Components/EditPostPage';
 
 const StudentsListStack = createNativeStackNavigator();
 
@@ -27,6 +29,9 @@ const StudentsListScreen = () => (
     <StudentsListStack.Screen name="Register" component={UserAddPage} options={{ title: 'Sign Up' }} />
     <StudentsListStack.Screen name="Sign_In" component={Sign_In} options={{ title: 'Sign In' }} />
     <StudentsListStack.Screen name="Add-Post" component={PostAddPage} options={{ title: 'Add New Post' }} />
+    <StudentsListStack.Screen name="Edit-User" component={EditUserPage} options={{ title: 'Edit Profile' }} />
+    <StudentsListStack.Screen name="My-Posts" component={MyPostsScreen} options={{ title: 'My Posts' }} />
+    <StudentsListStack.Screen name="Edit-Post" component={EditPostScreen} options={{ title: 'Edit-Post' }} />
   </StudentsListStack.Navigator>
 );
 
@@ -41,7 +46,7 @@ const App = () => {
       setIsLoggedIn(loggedIn);
     };
 
-    const intervalId = setInterval(checkLogin, 2000); // Check every 2 seconds
+    const intervalId = setInterval(checkLogin, 5000); // Check every 2 seconds
 
     checkLogin(); // Initial check
 

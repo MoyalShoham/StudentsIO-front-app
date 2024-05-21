@@ -1,30 +1,23 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView, Button, Alert, TextInput, StatusBar, KeyboardAvoidingView } from 'react-native';
-import React, { useState, FC, useEffect } from 'react';
-import UserModel, {User} from '../Model/UserModel';
-// import axios from 'axios';
+import { StyleSheet, Text, View, Image, TouchableOpacity, Button, TextInput, StatusBar } from 'react-native';
+import React, { useState, useEffect, FC } from 'react';
+import PostModel from '../Model/PostModel';
+import UserModel, { User } from '../Model/UserModel';
+import { useNavigation } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
-import Ionicons from '@expo/vector-icons/Ionicons'
 import FormData from 'form-data';
 import axios from 'axios';
+import { Ionicons } from '@expo/vector-icons';
 
 
+const EditPostScreen: FC<{
+    route: any,
+}> = ({ route }) => {
+    const { _id } = route.params;
+    const navigator = useNavigation();
+    const [im, setIm] = useState('none')
+    const [message, setMessage] = useState('');
 
-const getUser = async () => {
-    const user = await UserModel.getUser();
-    return user;
-}
-
-const EditUserPage: FC<{ navigation: any }> = ({ navigation }) => {
-    const [full_name, setFullName] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [year, setYear] = useState('');
-    const [faculty, setFaculty] = useState('');
-    const [gender, setGender] = useState('');
-    const [profile_picture, setProfilePicture] = useState('none');
     
-
-
 
 
     const request_permission = async () => {
@@ -38,7 +31,7 @@ const EditUserPage: FC<{ navigation: any }> = ({ navigation }) => {
         try{
             const res = await ImagePicker.launchCameraAsync()
             if(!res.canceled && res.assets.length > 0){
-                setProfilePicture(res.assets[0].uri);
+                setIm(res.assets[0].uri);
                 console.log(res.assets[0].uri);
             }
         } catch (err) {
@@ -49,7 +42,7 @@ const EditUserPage: FC<{ navigation: any }> = ({ navigation }) => {
         try{
             const res = await ImagePicker.launchImageLibraryAsync()
             if(!res.canceled && res.assets.length > 0){
-                setProfilePicture(res.assets[0].uri);
+                setIm(res.assets[0].uri);
                 console.log(res.assets[0].uri);
             }
         } catch (err) {
@@ -59,64 +52,78 @@ const EditUserPage: FC<{ navigation: any }> = ({ navigation }) => {
     }
     const upload_image = async () => {
         let body = new FormData();
-        body.append('file', {uri: profile_picture, name: full_name + "profile-picture", type: 'image/jpeg'});
+        body.append('file', {uri: im, name: "post-picture", type: 'image/jpeg'});
         let url = 'http://172.20.10.4:3000/files/file';
         const res = await axios.post(url, body);
-        console.log(res.data.url);
-        const user: any = {
-            full_name: full_name,
-            email: email,
-            password: password,
-            profile_picture: res.data.url,
-            gender: gender,
-            tokens: [],
-            posts: [],
-            year: year,
-            faculty: faculty,
-        }
-        return user;
+        console.log('\n\nthissssssss\n\n\nres.data:', res.data);
+        setIm(res.data.url);
+        const post: any = {
+            date: new Date().toISOString(),
+            owner: (await UserModel.getUser())._id,
+            message: message,
+            image: res.data.url,
+        } 
+        return post;
 
     }
 
+
     useEffect(() => {
-        const fetchUser = async () => {
-            const user = await getUser();
-            setFullName(user.full_name);
-            setEmail(user.email);
-            setYear(user.year);
-            setFaculty(user.faculty);
-            setGender(user.gender);
-            setProfilePicture(user.profile_picture.replace('\\', '/') ?? 'none');
-            setPassword(user.password);
-    
-        }
-        fetchUser();
         request_permission();
+        
     }, []);
     const onCancel = () => {
         console.log('Cancel');
-        navigation.navigate('Home-Page');
+        navigator.navigate('My-Posts' as never);
     }
 
 
     const onSave = async () => {
-       
-        const user = upload_image().then((user) => {
-            console.log(user);
-            UserModel.editUser(user);
-            navigation.navigate('Home-Page');
-        });
+        const post = await upload_image();
+        console.log(post);
+        PostModel.editPost(post, _id);
+        navigator.navigate('My-Posts' as never);
+        
     };
 
+
+    useEffect(() => {
+        console.log('nichnasnu');
+        const fetchPost = async () => {
+            try {
+                const post = await PostModel.getPostById(_id);
+                setMessage(post.message);
+                setIm(post.image.replace('\\', '/'));
+                console.log('image:', post.image)
+                console.log(post)
+            } catch (error) {
+                console.error('Error fetching post:', error);
+            }
+        }
+        fetchPost();
+        
+    }, []);
+
+
+
+   
+    
+
     return (
-        <KeyboardAvoidingView style={styles.container} behavior='padding' >
-            <ScrollView>
-                <View style={styles.container}>
-                    { 
-                        (profile_picture === 'none') ?
-                        <Image style={styles.avatar} source={require('../assets/avatar.jpeg')} />
-                        :
-                        <Image style={styles.avatar} source={{ uri: profile_picture }} />
+            <View style={styles.listrow}>
+                <View style={styles.info}>
+                    <TextInput
+                        style={styles.name}
+                        onChangeText={setMessage}
+                        value={message}
+                        placeholder="Enter your message" 
+                        />
+                   
+                    {
+                        im === 'none' ?
+                            <Image style={styles.image} source={require('../assets/avatar.jpeg')} />
+                            :
+                            <Image style={styles.image} source={{ uri: im }} />
                     }
 
                     <View style={{flexDirection: 'row'}}>
@@ -127,38 +134,6 @@ const EditUserPage: FC<{ navigation: any }> = ({ navigation }) => {
                             <Ionicons name="image" size={30} color="black" />
                         </TouchableOpacity>
                     </View>
-                    
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={setFullName}
-                        value={full_name}
-                        placeholder="Enter your Full Name"
-                    />
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={setEmail}
-                        value={email}
-                        placeholder="Enter your email"
-                    />
-                
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={setGender}
-                        value={gender}
-                        placeholder="Enter your Gender"
-                    />
-                <TextInput
-                        style={styles.input}
-                        onChangeText={setFaculty}
-                        value={faculty}
-                        placeholder="Enter your Faculty"
-                    />
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={setYear}
-                        value={year}
-                        placeholder="Enter your year of studies"
-                    />
                     <View style={styles.buttons}>
                         <TouchableOpacity style={styles.button} onPress={onCancel}>
                             <Text style={styles.buttonText}>CANCEL</Text>
@@ -167,53 +142,83 @@ const EditUserPage: FC<{ navigation: any }> = ({ navigation }) => {
                             <Text style={styles.buttonText}>SAVE</Text>
                         </TouchableOpacity>
                     </View>
+                    
+
                 </View>
-            </ScrollView>
-        </KeyboardAvoidingView>
+            </View>
     );
-}
+};
 
 const styles = StyleSheet.create({
-    container: {
-        marginTop: StatusBar.currentHeight,
-        flex: 1,
-        flexDirection: 'column',
-        alignSelf: 'center',
-        // alignItems: 'center',
-        // justifyContent: 'center',
-        width: '100%',
-        // paddingHorizontal: 10
-
-    },
-    title: {
-        fontSize: 30,
-        fontWeight: 'bold',
-        backgroundColor: 'blue',
+    listrow: {
+        marginHorizontal: 5,
+        marginVertical: 1,
+        flexDirection: 'row',
+        elevation: 1,
+        borderRadius: 2
     },
     avatar: {
-        alignSelf: 'center',
-        height: 200,
-        width: 200,
-    },
-    input: {
-        height: 40,
-        margin: 12,
-        borderWidth: 1,
-        padding: 10,
-    },
-    buttons: {
-        flexDirection: 'row',
-    },
-    button: {
-        flex: 1,
         margin: 10,
-        alignItems: 'center',
+        height: 100,
+        width: 100
     },
-    buttonText: {
-        padding: 10
-    }
+    image:{
+        margin: 10,
+        height: 150,
+        width: 200
+    },
+    info: {
+        flexDirection: 'column',
+        justifyContent: 'center'
+    },
+    name: {
+        marginBottom: 5,
+        fontSize: 25,
+        fontWeight: 'bold'
+    },
+    other: {
+        marginBottom: 5,
+        fontSize: 20
+    },
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center'
+    },container: {
+            marginTop: StatusBar.currentHeight,
+            flex: 1,
+            flexDirection: 'column',
+            alignSelf: 'center',
+            // alignItems: 'center',
+            // justifyContent: 'center',
+            width: '100%',
+            // paddingHorizontal: 10
+    
+        },
+        title: {
+            fontSize: 30,
+            fontWeight: 'bold',
+            backgroundColor: 'blue',
 
+        },
+        input: {
+            height: 40,
+            margin: 12,
+            borderWidth: 1,
+            padding: 10,
+        },
+        buttons: {
+            flexDirection: 'row',
+        },
+        button: {
+            flex: 1,
+            margin: 10,
+            alignItems: 'center',
+        },
+        buttonText: {
+            padding: 10
+        }
+        
 });
 
-
-export default EditUserPage;
+export default EditPostScreen;
