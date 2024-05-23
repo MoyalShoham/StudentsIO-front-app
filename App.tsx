@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-
+import { StyleSheet, View, ActivityIndicator } from 'react-native';
 // Import your components
 import StudentDetailsPage from './Components/StudentDetailsPage';
 import StudentListPage from './Components/StudentListPage';
@@ -21,6 +21,9 @@ import EditPostScreen from './Components/EditPostPage';
 
 const StudentsListStack = createNativeStackNavigator();
 
+
+
+
 const StudentsListScreen = () => (
   <StudentsListStack.Navigator>
     <StudentsListStack.Screen name="Start-Page" component={StartPage} options={{ title: 'Hello' }} />
@@ -32,6 +35,7 @@ const StudentsListScreen = () => (
     <StudentsListStack.Screen name="Edit-User" component={EditUserPage} options={{ title: 'Edit Profile' }} />
     <StudentsListStack.Screen name="My-Posts" component={MyPostsScreen} options={{ title: 'My Posts' }} />
     <StudentsListStack.Screen name="Edit-Post" component={EditPostScreen} options={{ title: 'Edit-Post' }} />
+
   </StudentsListStack.Navigator>
 );
 
@@ -48,7 +52,7 @@ const App = () => {
 
     const intervalId = setInterval(checkLogin, 5000); // Check every 2 seconds
 
-    checkLogin(); // Initial check
+    // checkLogin(); // Initial check
 
     // Cleanup function to clear interval on unmount
     return () => clearInterval(intervalId);
@@ -64,5 +68,21 @@ const App = () => {
     </NavigationContainer>
   );
 };
+
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+},
+});
+
 
 export default App;

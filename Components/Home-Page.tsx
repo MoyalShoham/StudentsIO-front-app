@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from "react";
-import { FlatList, Text, StyleSheet, Button } from "react-native";
+import { FlatList, Text, StyleSheet, Button, ActivityIndicator } from "react-native";
 import UserModel, { User } from "../Model/UserModel";
 import PostModel, { Post } from "../Model/PostModel";
 import Post_List_Row from "./PostListRow";
@@ -7,7 +7,7 @@ import Post_List_Row from "./PostListRow";
 const Home_Page: FC<{ navigation: any }> = ({ navigation }) => {
     const accessToken = UserModel.getAccessTokens();
     const [data, setData] = useState<Post[]>([]);
-    
+    const [isLoading, setIsLoading] = useState(false);
     const onItemSelected = (_id: string) => {
         
     }

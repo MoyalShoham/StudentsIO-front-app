@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity, Button, TextInput, StatusBar, Alert } from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity, Button, TextInput, StatusBar, Alert, ActivityIndicator } from 'react-native';
 import React, { useState, useEffect, FC } from 'react';
 import PostModel from '../Model/PostModel';
 import UserModel, { User } from '../Model/UserModel';
@@ -12,6 +12,7 @@ import { Ionicons } from '@expo/vector-icons';
 const EditPostScreen: FC<{
     route: any,
 }> = ({ route }) => {
+    const [loading, setLoading] = useState(false);
     const [confirm, setConfirm] = useState(false);
     const { _id } = route.params;
     const navigator = useNavigation();
@@ -80,10 +81,17 @@ const EditPostScreen: FC<{
 
 
     const onSave = async () => {
-        const post = await upload_image();
-        console.log(post);
-        PostModel.editPost(post, _id);
-        navigator.navigate('My-Posts' as never);
+        try {
+            setLoading(true);
+            const post = await upload_image();
+            console.log(post);
+            PostModel.editPost(post, _id);
+            navigator.navigate('My-Posts' as never);
+        } catch (error) {
+            console.error('Error saving post:', error);
+        } finally {
+            setLoading(false);
+        }
         
     };
 
@@ -168,9 +176,14 @@ const EditPostScreen: FC<{
                         <TouchableOpacity style={styles.button} onPress={onCancel}>
                             <Text style={styles.buttonText}>CANCEL</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={styles.button} onPress={onSave}>
+                        {
+                            loading ? (
+                                <ActivityIndicator size="large" color="#0000ff" />
+                            ) :
+                      (  <TouchableOpacity style={styles.button} onPress={onSave}>
                             <Text style={styles.buttonText}>SAVE</Text>
-                        </TouchableOpacity>
+                        </TouchableOpacity>)
+}
                     </View>
                     
 
