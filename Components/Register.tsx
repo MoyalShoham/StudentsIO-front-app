@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView, Button, Alert, TextInput, StatusBar, KeyboardAvoidingView } from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView, Button, Alert, TextInput, StatusBar, KeyboardAvoidingView, ActivityIndicator } from 'react-native';
 import React, { useState, FC, useEffect } from 'react';
 import UserModel, {User} from '../Model/UserModel';
 // import axios from 'axios';
@@ -11,6 +11,7 @@ import axios from 'axios';
 
 
 const UserAddPage: FC<{ navigation: any }> = ({ navigation }) => {
+    const [isLoading, setIsLoading] = useState(false);
     const [full_name, setFullName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -81,12 +82,17 @@ const UserAddPage: FC<{ navigation: any }> = ({ navigation }) => {
 
 
     const onSave = async () => {
-       
-        const user = upload_image().then((user) => {
+        try {
+            const user = await upload_image();
             console.log(user);
             UserModel.addUser(user);
             navigation.navigate('Sign_In');
-        });
+        } catch (err) {
+            console.log(err);
+        } finally {
+            setIsLoading(false);
+        }
+        
     };
 
     return (
@@ -150,9 +156,14 @@ const UserAddPage: FC<{ navigation: any }> = ({ navigation }) => {
                         <TouchableOpacity style={styles.button} onPress={onCancel}>
                             <Text style={styles.buttonText}>CANCEL</Text>
                         </TouchableOpacity>
+
+                    {isLoading ? (
+                        <ActivityIndicator size="large" color={"light-blue"} /> // Display the loading indicator
+                    ) : ( 
                         <TouchableOpacity style={styles.button} onPress={onSave}>
                             <Text style={styles.buttonText}>SAVE</Text>
                         </TouchableOpacity>
+                    )}
                     </View>
                 </View>
             </ScrollView>

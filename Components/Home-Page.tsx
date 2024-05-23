@@ -17,10 +17,14 @@ const Home_Page: FC<{ navigation: any }> = ({ navigation }) => {
         console.log('focus')
         let posts: Post[] = [];
         try {
+            setIsLoading(true);
             posts = await PostModel.getAllPosts();
+
         } catch (err) {
             setData(Array<Post>());
             console.log("fail fetching posts " + err)
+        } finally {
+            setIsLoading(false);
         }
         setData(posts);
         })
@@ -43,6 +47,7 @@ const Home_Page: FC<{ navigation: any }> = ({ navigation }) => {
     const keyExtractor = (item: Post) => item._id as string;
 
     const renderItem = ({ item }: { item: Post }) => (
+        
         <Post_List_Row
             owner={item.owner}
             message={item.message}
@@ -55,6 +60,7 @@ const Home_Page: FC<{ navigation: any }> = ({ navigation }) => {
 
 
     return (
+       
         <FlatList
             style={styles.flatList}
             data={data}

@@ -21,9 +21,6 @@ import EditPostScreen from './Components/EditPostPage';
 
 const StudentsListStack = createNativeStackNavigator();
 
-
-
-
 const StudentsListScreen = () => (
   <StudentsListStack.Navigator>
     <StudentsListStack.Screen name="Start-Page" component={StartPage} options={{ title: 'Hello' }} />
@@ -35,7 +32,6 @@ const StudentsListScreen = () => (
     <StudentsListStack.Screen name="Edit-User" component={EditUserPage} options={{ title: 'Edit Profile' }} />
     <StudentsListStack.Screen name="My-Posts" component={MyPostsScreen} options={{ title: 'My Posts' }} />
     <StudentsListStack.Screen name="Edit-Post" component={EditPostScreen} options={{ title: 'Edit-Post' }} />
-
   </StudentsListStack.Navigator>
 );
 
@@ -43,32 +39,44 @@ const Tab = createBottomTabNavigator();
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false); // Login status
+  const [loading, setLoading] = useState(true); // Loading status
 
   useEffect(() => {
     const checkLogin = async () => {
       const loggedIn = await UserModel.isLoggedIn();
       setIsLoggedIn(loggedIn);
+      setLoading(false); // Set loading to false after the check
     };
 
-    const intervalId = setInterval(checkLogin, 5000); // Check every 2 seconds
+    checkLogin(); // Initial check
 
-    // checkLogin(); // Initial check
+    const intervalId = setInterval(checkLogin, 5000); // Check every 5 seconds
 
     // Cleanup function to clear interval on unmount
     return () => clearInterval(intervalId);
   }, []); // Empty dependency array for initial render
 
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
+
   return (
     <NavigationContainer>
       <Tab.Navigator>
         <Tab.Screen name="StudentListScreen" component={StudentsListScreen} options={{ headerShown: false }} />
-        {isLoggedIn && <Tab.Screen name="Settings" component={SettingsScreen} options={{ title: 'Settings' }} />}
-        {!isLoggedIn && <Tab.Screen name="Sign_In" component={Sign_In} options={{ title: 'Log In' }} />}
+        {isLoggedIn ? (
+          <Tab.Screen name="Settings" component={SettingsScreen} options={{ title: 'Settings' }} />
+        ) : (
+          <Tab.Screen name="Sign_In" component={Sign_In} options={{ title: 'Log In' }} />
+        )}
       </Tab.Navigator>
     </NavigationContainer>
   );
 };
-
 
 const styles = StyleSheet.create({
   container: {
@@ -81,8 +89,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-},
+  },
 });
-
 
 export default App;

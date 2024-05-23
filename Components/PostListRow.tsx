@@ -63,8 +63,8 @@ const Post_List_Row: FC<{
                     </Text>
                     <Text style={styles.other}>{user ? `${user.faculty} year: ${user.year}` : ''}</Text>
                     <Text style={styles.other}>{message}</Text>
-                    <Text style={styles.other}>{date.toString()}</Text>
-                    <Text style={styles.other}>{_id}</Text>
+                    {/* <Text style={styles.other}>{date.toISOString()}</Text> */}
+                    {/* <Text style={styles.other}>{_id}</Text> */}
                     {
                         im === 'none' ?
                             <Image style={styles.image} source={require('../assets/avatar.jpeg')} />
